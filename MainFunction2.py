@@ -1,3 +1,4 @@
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.image as mpimg
@@ -15,19 +16,17 @@ from tkinter.filedialog import askopenfilename
 from tkinter import *
 from PIL import Image, ImageTk
 import pandas as pd
+from TrackRoots import TrackRoots
+
 
 #Plot the RGB image and save the plotted image as a JPG file which can be read into Tk.OpenImage Function
-def toJPG(filePath):   #Read in filepath
-   
+def toJPG(filePath, which):   #Read in filepath
+    print(filePath)
     cutfile = filePath[:-3]   #Filename without the picture type(.bmp/.tif/jpg etc)
     fileJPG = (cutfile + "jpg")   #Add the JPG file type to original image path
     img = mpimg.imread(filePath)      #Convert Filepath to image
-    
-    if len(img.shape) == 2:         #Create new variable holding the potential new RGB image
-        imgRGB = to_rgb1a(img)
-    else:
-        imgRGB = img
-        
+    print(len(img.shape))
+
     fig = plt.figure()              #Plot the RGB image and save the plotted image as a JPG file
     ax = plt.Axes(fig, [0., 0., 1., 1.])
     fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
@@ -35,7 +34,22 @@ def toJPG(filePath):   #Read in filepath
     ax.get_xaxis().set_visible(False) # this removes the ticks and numbers for x axis
     ax.get_yaxis().set_visible(False) # this removes the ticks and numbers for y axis
     fig.add_axes(ax)
-    plt.imshow(imgRGB, interpolation="none")
+
+    if len(img.shape) == 2:         #Create new variable holding the potential new RGB image
+        imgRGB = to_rgb1a(img)
+    else:
+        imgRGB = img
+
+    if which == 1:                  #Set 1st image color to luminous heat map...
+        lum_img = imgRGB[:,:,0]
+        plt.imshow(lum_img, cmap="Blues", interpolation="none")
+    elif which == 2: 
+        lum_img = imgRGB[:,:,0]
+        plt.imshow(lum_img, cmap="hot", interpolation="none")
+    else:
+        plt.imshow(imgRGB, interpolation="none")
+
+
     plt.savefig(fileJPG,bbox_inches="tight", dpi=110)
     plt.close()
     
@@ -56,8 +70,8 @@ imagePath1 = askopenfilename()
 imagePath2 = askopenfilename()
 
 #Convert the images into a JPG for use in Tkinter window
-image1 = Image.open(toJPG(imagePath1))
-image2 = Image.open(toJPG(imagePath2))
+image1 = Image.open(toJPG(imagePath1, 1))
+image2 = Image.open(toJPG(imagePath2, 2))
 
 #Set up structure for window
 windowStructure = mpimg.imread(imagePath1)
@@ -86,12 +100,6 @@ count = 1
 listOfXC = []
 listOfYC = []
 listOfP = []
-
-
-
-
-
-
 
 
 w = Canvas(master, width=height1, height=width1) #intialize the canvas on the external window with a size of the image being displayed
@@ -126,12 +134,14 @@ w.bind("<Button 1>",clickAndPrint)
 master.mainloop()
 
 
-
-
 dataf = {'X Coordinates':listOfXC,'Y Coordinates':listOfYC}
 df = pd.DataFrame(dataf, index=listOfP)
 
 print(df)
 
-df.to_csv("Test.csv")
+#df.to_csv("Test.csv")
+
+coordinates = [listOfXC, listOfYC];
+#print(TrackRoots)
+TrackRoots(coordinates, img, imagePath1);
 
