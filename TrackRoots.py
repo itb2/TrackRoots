@@ -18,7 +18,7 @@ import pandas as pd
 imgFiles = []
 
 def TrackRoots(RootCords, img, file1):
-    import MainFunction2 as mf #moved import to allow for cyclical imports in python. see -> https://gist.github.com/datagrok/40bf84d5870c41a77dc6
+    import ImageHandler as ih #moved import to allow for cyclical imports in python. see -> https://gist.github.com/datagrok/40bf84d5870c41a77dc6
 
     initXCords = RootCords[0]
     initYCords = RootCords[1]
@@ -58,12 +58,12 @@ def TrackRoots(RootCords, img, file1):
     #############################
     master2 = Tk()
     #Convert the images into a JPG for use in Tkinter window
-    image = Image.open(mf.toJPG(imgFiles[1], 0))
+    image = Image.open(ih.toJPG(imgFiles[1], 0))
     
     #Set up structure for window
     windowStructure = mpimg.imread(imgFiles[1])
     if len(windowStructure.shape) < 3:
-        windowStructure = mf.to_rgb1a(windowStructure)
+        windowStructure = ih.to_rgb1a(windowStructure)
         
     width1,height1,dim = windowStructure.shape  #Create an image object to initialize the size of the canvas window
     
